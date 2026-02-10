@@ -10,7 +10,21 @@ struct ValidationView: View {
                 .bold()
 
             if store.validationIssues.isEmpty {
-                ContentUnavailableView("No Issues", systemImage: "checkmark.seal", description: Text("Your configuration looks clean."))
+                if #available(macOS 14.0, *) {
+                    ContentUnavailableView("No Issues", systemImage: "checkmark.seal", description: Text("Your configuration looks clean."))
+                } else {
+                    VStack(spacing: 12) {
+                        Image(systemName: "checkmark.seal")
+                            .font(.system(size: 48))
+                            .foregroundStyle(.secondary)
+                        Text("No Issues")
+                            .font(.headline)
+                        Text("Your configuration looks clean.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
             } else {
                 List(store.validationIssues) { issue in
                     HStack(alignment: .top, spacing: 12) {

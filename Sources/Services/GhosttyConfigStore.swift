@@ -9,6 +9,7 @@ final class GhosttyConfigStore: ObservableObject {
     @Published var validationIssues: [ValidationIssue] = []
     @Published var rawText: String = ""
     @Published var activeConfigURL: URL?
+    @Published var configOptionDetails: [ConfigOptionDetail] = []
 
     private let catalog = GhosttyOptionCatalog.shared
 
@@ -28,6 +29,7 @@ final class GhosttyConfigStore: ObservableObject {
             configEntries = []
             keybindingEntries = []
             validationIssues = []
+            configOptionDetails = []
             rawText = ""
             return
         }
@@ -62,7 +64,7 @@ final class GhosttyConfigStore: ObservableObject {
             .appendingPathComponent("com.mitchellh.ghostty", isDirectory: true)
             .appendingPathComponent("config")
 
-        return [xdgPath, macPath]
+        return [macPath, xdgPath]
     }
 
     private func parse(rawText: String, sourcePath: String) {
@@ -97,32 +99,52 @@ final class GhosttyConfigStore: ObservableObject {
                 validateKeybinding(action: action, sourcePath: sourcePath, lineNumber: index + 1, issues: &issues)
             } else {
                 entries.append(ConfigEntry(key: key, value: value, sourcePath: sourcePath, lineNumber: index + 1))
-                validateOption(key: key, sourcePath: sourcePath, lineNumber: index + 1, issues: &issues)
+                validateOption(key: key, value: value, sourcePath: sourcePath, lineNumber: index + 1, issues: &issues)
             }
         }
 
         configEntries = entries
         keybindingEntries = keybindings
         validationIssues = issues
+
+        configOptionDetails = entries.map { entry in
+            ConfigOptionDetail(entry: entry, catalogOption: catalog.optionsByKey[entry.key])
+        }
     }
 
-    private func validateOption(key: String, sourcePath: String, lineNumber: Int, issues: inout [ValidationIssue]) {
-        guard !catalog.options.isEmpty else { return }
-        if !catalog.options.contains(key) {
+    private func validateOption(key: String, value: String, sourcePath: String, lineNumber: Int, issues: inout [ValidationIssue]) {
+        guard !catalog.optionKeys.isEmpty else { return }
+        if !catalog.optionKeys.contains(key) {
             issues.append(ValidationIssue(
                 severity: .warning,
                 message: "Unknown option: \(key)",
                 sourcePath: sourcePath,
                 lineNumber: lineNumber
             ))
+            return
+        }
+
+        if let option = catalog.optionsByKey[key],
+           let validValues = option.validValues,
+           !validValues.isEmpty,
+           option.type == "enum",
+           !value.isEmpty {
+            if !validValues.contains(value) {
+                issues.append(ValidationIssue(
+                    severity: .warning,
+                    message: "Invalid value '\(value)' for option '\(key)'. Valid values: \(validValues.joined(separator: ", "))",
+                    sourcePath: sourcePath,
+                    lineNumber: lineNumber
+                ))
+            }
         }
     }
 
     private func validateKeybinding(action: String, sourcePath: String, lineNumber: Int, issues: inout [ValidationIssue]) {
-        guard !catalog.keybindingActions.isEmpty else { return }
+        guard !catalog.actionKeys.isEmpty else { return }
         let actionKey = action.split(separator: ":", maxSplits: 1, omittingEmptySubsequences: false).first.map(String.init) ?? action
         guard !actionKey.isEmpty else { return }
-        if !catalog.keybindingActions.contains(actionKey) {
+        if !catalog.actionKeys.contains(actionKey) {
             issues.append(ValidationIssue(
                 severity: .warning,
                 message: "Unknown keybinding action: \(actionKey)",

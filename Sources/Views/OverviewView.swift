@@ -13,7 +13,8 @@ struct OverviewView: View {
                 .foregroundStyle(.secondary)
 
             HStack(spacing: 16) {
-                SummaryCard(title: "Options", value: "\(store.configEntries.count)", systemImage: "slider.horizontal.3")
+                SummaryCard(title: "Configured", value: "\(store.configEntries.count)", systemImage: "slider.horizontal.3")
+                SummaryCard(title: "Catalog", value: "\(GhosttyOptionCatalog.shared.options.count)", systemImage: "list.bullet.rectangle")
                 SummaryCard(title: "Keybindings", value: "\(store.keybindingEntries.count)", systemImage: "keyboard")
                 SummaryCard(title: "Warnings", value: "\(store.validationIssues.count)", systemImage: "exclamationmark.triangle")
             }
