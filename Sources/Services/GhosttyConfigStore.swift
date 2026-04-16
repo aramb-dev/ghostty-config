@@ -89,7 +89,12 @@ final class GhosttyConfigStore: ObservableObject {
             }
 
             let key = parts[0].trimmingCharacters(in: .whitespaces)
-            let value = parts[1].trimmingCharacters(in: .whitespaces)
+            var value = parts[1].trimmingCharacters(in: .whitespaces)
+
+            // Strip inline comments (e.g. key = value # comment)
+            if let commentRange = value.range(of: "\\s#", options: .regularExpression) {
+                value = String(value[..<commentRange.lowerBound]).trimmingCharacters(in: .whitespaces)
+            }
 
             if key == "keybind" {
                 let keybindParts = value.split(separator: "=", maxSplits: 1, omittingEmptySubsequences: false)
