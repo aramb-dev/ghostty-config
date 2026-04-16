@@ -1,47 +1,53 @@
 import Foundation
 
 struct ConfigEntry: Identifiable, Hashable {
-    let id: UUID
+    let id: UUID = UUID()
     var key: String
     var value: String
     var sourcePath: String
     var lineNumber: Int
 
-    init(key: String, value: String, sourcePath: String, lineNumber: Int) {
-        self.id = UUID()
-        self.key = key
-        self.value = value
-        self.sourcePath = sourcePath
-        self.lineNumber = lineNumber
+    static func == (lhs: ConfigEntry, rhs: ConfigEntry) -> Bool {
+        lhs.key == rhs.key &&
+        lhs.value == rhs.value &&
+        lhs.sourcePath == rhs.sourcePath &&
+        lhs.lineNumber == rhs.lineNumber
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(key)
+        hasher.combine(value)
+        hasher.combine(sourcePath)
+        hasher.combine(lineNumber)
     }
 }
 
 struct KeybindingEntry: Identifiable, Hashable {
-    let id: UUID
+    let id: UUID = UUID()
     var chord: String
     var action: String
     var sourcePath: String
     var lineNumber: Int
 
-    init(chord: String, action: String, sourcePath: String, lineNumber: Int) {
-        self.id = UUID()
-        self.chord = chord
-        self.action = action
-        self.sourcePath = sourcePath
-        self.lineNumber = lineNumber
+    static func == (lhs: KeybindingEntry, rhs: KeybindingEntry) -> Bool {
+        lhs.chord == rhs.chord &&
+        lhs.action == rhs.action &&
+        lhs.sourcePath == rhs.sourcePath &&
+        lhs.lineNumber == rhs.lineNumber
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(chord)
+        hasher.combine(action)
+        hasher.combine(sourcePath)
+        hasher.combine(lineNumber)
     }
 }
 
 struct ConfigFileLocation: Identifiable, Hashable {
-    let id: UUID
+    let id: UUID = UUID()
     var url: URL
     var exists: Bool
-
-    init(url: URL, exists: Bool) {
-        self.id = UUID()
-        self.url = url
-        self.exists = exists
-    }
 }
 
 struct ValidationIssue: Identifiable, Hashable {
@@ -50,19 +56,11 @@ struct ValidationIssue: Identifiable, Hashable {
         case error
     }
 
-    let id: UUID
+    let id: UUID = UUID()
     var severity: Severity
     var message: String
     var sourcePath: String
     var lineNumber: Int?
-
-    init(severity: Severity, message: String, sourcePath: String, lineNumber: Int? = nil) {
-        self.id = UUID()
-        self.severity = severity
-        self.message = message
-        self.sourcePath = sourcePath
-        self.lineNumber = lineNumber
-    }
 }
 
 struct ConfigOptionDetail: Identifiable, Hashable {

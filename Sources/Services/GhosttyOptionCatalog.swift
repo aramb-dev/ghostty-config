@@ -74,13 +74,14 @@ struct GhosttyOptionCatalog: Decodable {
     }
 
     static let shared: GhosttyOptionCatalog = {
-        guard
-            let url = Bundle.main.url(forResource: "ghostty-catalog", withExtension: "json"),
-            let data = try? Data(contentsOf: url),
-            let catalog = try? JSONDecoder().decode(GhosttyOptionCatalog.self, from: data)
-        else {
-            return GhosttyOptionCatalog(options: [], actions: [])
+        do {
+            guard let url = Bundle.main.url(forResource: "ghostty-catalog", withExtension: "json") else {
+                fatalError("Missing resource: ghostty-catalog.json")
+            }
+            let data = try Data(contentsOf: url)
+            return try JSONDecoder().decode(GhosttyOptionCatalog.self, from: data)
+        } catch {
+            fatalError("Failed to decode ghostty-catalog.json: \(error)")
         }
-        return catalog
     }()
 }

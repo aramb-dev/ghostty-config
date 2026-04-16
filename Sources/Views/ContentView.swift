@@ -51,6 +51,7 @@ struct ContentView: View {
                             showingSaveAlert = true
                         }
                     }
+                    .disabled(store.activeConfigURL == nil)
                 }
             }
             .alert("Unable to Save", isPresented: $showingSaveAlert) {

@@ -30,25 +30,7 @@ struct LocationsView: View {
             .listStyle(.inset)
 
             if store.activeConfigURL == nil {
-                Group {
-                    if #available(macOS 14.0, *) {
-                        ContentUnavailableView("No Config Found", systemImage: "folder.badge.questionmark", description: Text("Create a config file in one of the locations above to get started."))
-                    } else {
-                        VStack(spacing: 8) {
-                            Image(systemName: "folder.badge.questionmark")
-                                .font(.system(size: 48))
-                                .foregroundStyle(.secondary)
-                            Text("No Config Found")
-                                .font(.headline)
-                            Text("Create a config file in one of the locations above to get started.")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .multilineTextAlignment(.center)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                    }
-                }
+                ContentUnavailableView("No Config Found", systemImage: "folder.badge.questionmark", description: Text("Create a config file in one of the locations above to get started."))
             }
         }
         .padding(24)

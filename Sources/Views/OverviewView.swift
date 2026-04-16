@@ -16,7 +16,7 @@ struct OverviewView: View {
                 SummaryCard(title: "Configured", value: "\(store.configEntries.count)", systemImage: "slider.horizontal.3")
                 SummaryCard(title: "Catalog", value: "\(GhosttyOptionCatalog.shared.options.count)", systemImage: "list.bullet.rectangle")
                 SummaryCard(title: "Keybindings", value: "\(store.keybindingEntries.count)", systemImage: "keyboard")
-                SummaryCard(title: "Warnings", value: "\(store.validationIssues.count)", systemImage: "exclamationmark.triangle")
+                SummaryCard(title: "Issues", value: "\(store.validationIssues.count)", systemImage: "exclamationmark.triangle")
             }
 
             if let url = store.activeConfigURL {

@@ -1519,17 +1519,6 @@
       "since": "1.2.0"
     },
     {
-      "key": "keybind",
-      "description": "Key bindings. Format: 'trigger=action'. Supports modifiers (ctrl, alt, shift, super), chords (>), and prefixes (all:, global:, unconsumed:, performable:).",
-      "type": "string",
-      "default": null,
-      "validValues": null,
-      "repeatable": true,
-      "platform": "all",
-      "category": "Keybindings",
-      "since": null
-    },
-    {
       "key": "osc-color-report-format",
       "description": "Format for OSC color query responses.",
       "type": "enum",

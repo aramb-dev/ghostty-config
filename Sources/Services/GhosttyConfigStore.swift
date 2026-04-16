@@ -93,10 +93,21 @@ final class GhosttyConfigStore: ObservableObject {
 
             if key == "keybind" {
                 let keybindParts = value.split(separator: "=", maxSplits: 1, omittingEmptySubsequences: false)
-                let chord = keybindParts.first.map(String.init) ?? value
-                let action = keybindParts.count > 1 ? String(keybindParts[1]) : ""
-                keybindings.append(KeybindingEntry(chord: chord, action: action, sourcePath: sourcePath, lineNumber: index + 1))
-                validateKeybinding(action: action, sourcePath: sourcePath, lineNumber: index + 1, issues: &issues)
+                if keybindParts.count == 2 {
+                    let chord = String(keybindParts[0]).trimmingCharacters(in: .whitespaces)
+                    let action = String(keybindParts[1]).trimmingCharacters(in: .whitespaces)
+                    keybindings.append(KeybindingEntry(chord: chord, action: action, sourcePath: sourcePath, lineNumber: index + 1))
+                    validateKeybinding(action: action, sourcePath: sourcePath, lineNumber: index + 1, issues: &issues)
+                } else {
+                    issues.append(ValidationIssue(
+                        severity: .warning,
+                        message: "Invalid keybind format. Expected 'chord=action'.",
+                        sourcePath: sourcePath,
+                        lineNumber: index + 1
+                    ))
+                    let chord = value.trimmingCharacters(in: .whitespaces)
+                    keybindings.append(KeybindingEntry(chord: chord, action: "", sourcePath: sourcePath, lineNumber: index + 1))
+                }
             } else {
                 entries.append(ConfigEntry(key: key, value: value, sourcePath: sourcePath, lineNumber: index + 1))
                 validateOption(key: key, value: value, sourcePath: sourcePath, lineNumber: index + 1, issues: &issues)
